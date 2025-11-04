@@ -8,6 +8,7 @@ impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::InRace), setup_hud)
             .add_systems(Update, update_hud.run_if(in_state(GameState::InRace)))
+            .add_systems(Update, hud_system.run_if(in_state(GameState::InRace)))
             .add_systems(OnExit(GameState::InRace), cleanup_hud);
     }
 }
@@ -44,6 +45,7 @@ fn setup_hud(mut commands: Commands) {
                 SpeedText,
             ));
 
+            /*
             parent.spawn((
                 Text::new("health: 100%"),
                 TextFont {
@@ -57,7 +59,27 @@ fn setup_hud(mut commands: Commands) {
                 },
                 HealthText,
             ));
+            */
+
+            parent.spawn((
+                Text::new("press Q to quit race"),
+                TextFont {
+                    font_size: 20.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                Node {
+                    margin: UiRect::top(Val::Px(10.0)),
+                    ..default()
+                },
+            ));
         });
+}
+
+fn hud_system(keyboard: Res<ButtonInput<KeyCode>>, mut next_state: ResMut<NextState<GameState>>) {
+    if keyboard.just_pressed(KeyCode::KeyQ) {
+        next_state.set(GameState::MainMenu);
+    }
 }
 
 fn update_hud(

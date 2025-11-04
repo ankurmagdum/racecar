@@ -21,16 +21,30 @@ impl Default for FollowCamera {
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::InRace), spawn_camera)
-            .add_systems(Update, follow_player.run_if(in_state(GameState::InRace)));
+        app.add_systems(OnEnter(GameState::MainMenu), spawn_main_menu_camera)
+            .add_systems(OnEnter(GameState::InRace), spawn_hud_camera)
+            .add_systems(Update, follow_player.run_if(in_state(GameState::InRace)))
+            .add_systems(OnExit(GameState::MainMenu), cleanup_main_menu_camera)
+            .add_systems(OnExit(GameState::InRace), cleanup_hud_camera);
     }
 }
 
-fn spawn_camera(mut commands: Commands) {
+#[derive(Component)]
+struct MainMenuCamera;
+
+#[derive(Component)]
+struct HudCamera;
+
+fn spawn_main_menu_camera(mut commands: Commands) {
+    commands.spawn((Camera2d::default(), MainMenuCamera));
+}
+
+fn spawn_hud_camera(mut commands: Commands) {
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(0.0, 5.0, -10.0).looking_at(Vec3::ZERO, Vec3::Y),
         FollowCamera::default(),
+        HudCamera,
     ));
 }
 
@@ -49,5 +63,17 @@ fn follow_player(
 
             camera_transform.look_at(player_transform.translation, Vec3::Y);
         }
+    }
+}
+
+fn cleanup_main_menu_camera(mut commands: Commands, query: Query<Entity, With<MainMenuCamera>>) {
+    for entity in &query {
+        commands.entity(entity).despawn();
+    }
+}
+
+fn cleanup_hud_camera(mut commands: Commands, query: Query<Entity, With<HudCamera>>) {
+    for entity in &query {
+        commands.entity(entity).despawn();
     }
 }

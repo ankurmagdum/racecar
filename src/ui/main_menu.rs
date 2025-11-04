@@ -10,25 +10,15 @@ impl Plugin for MainMenuPlugin {
                 Update,
                 main_menu_system.run_if(in_state(GameState::MainMenu)),
             )
-            .add_systems(OnExit(GameState::MainMenu), cleanup_menu)
-            .add_systems(OnExit(GameState::MainMenu), cleanup_menu_camera);
+            .add_systems(Update, handle_quit_input.run_if(in_state(GameState::MainMenu)))
+            .add_systems(OnExit(GameState::MainMenu), cleanup_menu);
     }
 }
 
 #[derive(Component)]
 struct MainMenuUI;
 
-#[derive(Component)]
-struct MainMenuCamera;
-
-fn cleanup_menu_camera(mut commands: Commands, query: Query<Entity, With<MainMenuCamera>>) {
-    for entity in &query {
-        commands.entity(entity).despawn();
-    }
-}
-
 fn setup_main_menu(mut commands: Commands) {
-    commands.spawn((Camera2d::default(), MainMenuCamera));
     commands
         .spawn((
             Node {
@@ -44,7 +34,7 @@ fn setup_main_menu(mut commands: Commands) {
         ))
         .with_children(|parent| {
             parent.spawn((
-                Text::new("a racing game"),
+                Text::new("racecar"),
                 TextFont {
                     font_size: 60.0,
                     ..default()
@@ -55,12 +45,25 @@ fn setup_main_menu(mut commands: Commands) {
             parent.spawn((
                 Text::new("press SPACE to start"),
                 TextFont {
-                    font_size: 30.0,
+                    font_size: 20.0,
                     ..default()
                 },
                 TextColor(Color::srgb(0.7, 0.7, 0.7)),
                 Node {
                     margin: UiRect::top(Val::Px(50.0)),
+                    ..default()
+                },
+            ));
+
+            parent.spawn((
+                Text::new("press Q to quit"),
+                TextFont {
+                    font_size: 20.0,
+                    ..default()
+                },
+                TextColor(Color::srgb(0.7, 0.7, 0.7)),
+                Node {
+                    margin: UiRect::top(Val::Px(20.0)),
                     ..default()
                 },
             ));
@@ -79,5 +82,12 @@ fn main_menu_system(
 fn cleanup_menu(mut commands: Commands, query: Query<Entity, With<MainMenuUI>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
+    }
+}
+
+fn handle_quit_input(keys: Res<ButtonInput<KeyCode>>, mut exit: EventWriter<AppExit>) {
+    if keys.just_pressed(KeyCode::KeyQ) {
+        info!("Exiting...");
+        exit.write(AppExit::Success);
     }
 }

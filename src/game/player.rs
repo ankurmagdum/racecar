@@ -10,7 +10,8 @@ impl Plugin for PlayerPlugin {
             .add_systems(
                 Update,
                 (player_input, player_movement).run_if(in_state(GameState::InRace)),
-            );
+            )
+            .add_systems(OnExit(GameState::InRace), cleanup_player);
     }
 }
 
@@ -76,10 +77,16 @@ fn player_movement(
         velocity.angular = turn_input * racer.turn_speed;
         transform.rotate_y(-velocity.angular * time.delta_secs());
 
-        let forward = transform.forward();
+        let forward = transform.back();
         
         velocity.linear = forward * racer.speed;
         transform.translation += velocity.linear * time.delta_secs();
         transform.translation.x = transform.translation.x.clamp(-5.0, 5.0);
+    }
+}
+
+fn cleanup_player(mut commands: Commands, query: Query<Entity, With<Player>>) {
+    for entity in &query {
+        commands.entity(entity).despawn();
     }
 }
