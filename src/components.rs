@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Player;
-
-#[derive(Component)]
 pub struct Velocity {
     pub linear: Vec3,
     pub angular: f32,
@@ -17,6 +14,9 @@ impl Default for Velocity {
         }
     }
 }
+
+#[derive(Component)]
+pub struct Car;
 
 #[derive(Component)]
 pub struct Racer {

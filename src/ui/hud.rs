@@ -1,4 +1,4 @@
-use crate::components::{Health, Player, Racer};
+use crate::components::{Health, Car, Racer};
 use crate::GameState;
 use bevy::prelude::*;
 
@@ -83,7 +83,7 @@ fn hud_system(keyboard: Res<ButtonInput<KeyCode>>, mut next_state: ResMut<NextSt
 }
 
 fn update_hud(
-    player_query: Query<(&Racer, &Health), With<Player>>,
+    player_query: Query<(&Racer, &Health), With<Car>>,
     mut speed_query: Query<&mut Text, (With<SpeedText>, Without<HealthText>)>,
     mut health_query: Query<&mut Text, (With<HealthText>, Without<SpeedText>)>,
 ) {

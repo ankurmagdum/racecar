@@ -1,4 +1,4 @@
-use crate::components::Player;
+use crate::components::Car;
 use crate::states::GameState;
 use bevy::prelude::*;
 
@@ -42,20 +42,22 @@ fn spawn_main_menu_camera(mut commands: Commands) {
 fn spawn_hud_camera(mut commands: Commands) {
     commands.spawn((
         Camera3d::default(),
-        Transform::from_xyz(0.0, 5.0, -10.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Transform::from_xyz(0.0, 2.0, -8.0).looking_at(Vec3::ZERO, Vec3::Y),
         FollowCamera::default(),
         HudCamera,
     ));
 }
 
 fn follow_player(
-    mut camera_query: Query<(&mut Transform, &FollowCamera), Without<Player>>,
-    player_query: Query<&Transform, With<Player>>,
+    mut camera_query: Query<(&mut Transform, &FollowCamera), Without<Car>>,
+    player_query: Query<&Transform, With<Car>>,
     time: Res<Time>,
 ) {
     if let Ok(player_transform) = player_query.single() {
         if let Ok((mut camera_transform, follow_cam)) = camera_query.single_mut() {
-            let target_position = player_transform.translation + follow_cam.offset;
+            let rotation = player_transform.rotation.clone();
+            let offset = rotation.mul_vec3(follow_cam.offset.clone());
+            let target_position = player_transform.translation + offset;
 
             camera_transform.translation = camera_transform
                 .translation
