@@ -10,7 +10,10 @@ impl Plugin for MainMenuPlugin {
                 Update,
                 main_menu_system.run_if(in_state(GameState::MainMenu)),
             )
-            .add_systems(Update, handle_quit_input.run_if(in_state(GameState::MainMenu)))
+            .add_systems(
+                Update,
+                handle_quit_input.run_if(in_state(GameState::MainMenu)),
+            )
             .add_systems(OnExit(GameState::MainMenu), cleanup_menu);
     }
 }

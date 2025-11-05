@@ -1,5 +1,5 @@
-use crate::components::{Health, Car, Racer};
 use crate::GameState;
+use crate::components::{Car, Health, Racer};
 use bevy::prelude::*;
 
 pub struct HudPlugin;

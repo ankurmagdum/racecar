@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
-mod main_menu;
 mod hud;
+mod main_menu;
 
-use main_menu::MainMenuPlugin;
 use hud::HudPlugin;
+use main_menu::MainMenuPlugin;
 
 pub struct UIPlugin;
 
@@ -13,4 +13,3 @@ impl Plugin for UIPlugin {
         app.add_plugins((MainMenuPlugin, HudPlugin));
     }
 }
-

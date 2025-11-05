@@ -40,6 +40,11 @@ fn spawn_main_menu_camera(mut commands: Commands) {
 }
 
 fn spawn_hud_camera(mut commands: Commands) {
+    commands.insert_resource(AmbientLight {
+        brightness: 400.0,
+        ..default()
+    });
+
     commands.spawn((
         Camera3d::default(),
         Transform::from_xyz(0.0, 2.0, -8.0).looking_at(Vec3::ZERO, Vec3::Y),
@@ -56,6 +61,7 @@ fn follow_player(
     if let Ok(player_transform) = player_query.single() {
         if let Ok((mut camera_transform, follow_cam)) = camera_query.single_mut() {
             let rotation = player_transform.rotation.clone();
+            let rotation = rotation.mul_quat(Quat::from_rotation_y(std::f32::consts::FRAC_PI_2));
             let offset = rotation.mul_vec3(follow_cam.offset.clone());
             let target_position = player_transform.translation + offset;
 
